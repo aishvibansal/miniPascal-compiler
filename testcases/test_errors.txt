@@ -1,0 +1,7 @@
+program errortest;
+var x : integer;
+begin
+    y := 5;
+    x := 10 + ;
+    write(x)
+end.
