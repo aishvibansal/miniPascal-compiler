@@ -1,6 +1,6 @@
 package compiler;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -30,16 +30,28 @@ public class Main {
         Parser parser = new Parser(tokens);
         ProgramNode ast = parser.parseProgram();
 
-        System.out.println("Program name: " + ast.name);
-        System.out.println("Declarations: " + ast.declarations.size());
-        System.out.println("Parsed successfully!");
+        // Semantic Analysis
+        SemanticAnalyzer analyzer = new SemanticAnalyzer();
+        analyzer.analyze(ast);
 
+        // Collect all errors
         List<String> errors = new ArrayList<>(lexer.getErrors());
         errors.addAll(parser.getErrors());
+        errors.addAll(analyzer.getErrors());
 
-        if (!errors.isEmpty()) {
-            System.out.println("\nErrors:");
-            for (String e : errors) System.out.println(e);
+        // Print symbol table
+        System.out.println("=== Symbol Table ===");
+        analyzer.getSymbolTable().forEach((name, symbol) ->
+            System.out.println("  " + name + " : " + symbol.type +
+                (symbol.isArray ? "[" + symbol.arraySize + "]" : ""))
+        );
+
+        // Print errors or success
+        System.out.println("\n=== Errors ===");
+        if (errors.isEmpty()) {
+            System.out.println("  No errors found. Semantic analysis passed!");
+        } else {
+            for (String e : errors) System.out.println("  " + e);
         }
     }
 }
