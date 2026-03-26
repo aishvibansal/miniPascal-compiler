@@ -9,8 +9,16 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
 
+        // If --server flag is passed, start the web IDE
+        if (args.length > 0 && args[0].equals("--server")) {
+            int port = 8080;
+            if (args.length > 1) port = Integer.parseInt(args[1]);
+            CompilerServer.start(port);
+            return;
+        }
+
         String sourceCode;
-        String baseName = "output";
+        String baseName = "output/output";
 
         if (args.length > 0) {
             sourceCode = new String(Files.readAllBytes(Paths.get(args[0])));
@@ -65,9 +73,7 @@ public class Main {
         listing.printListing();
         listing.saveListing(baseName + "_listing.txt");
 
-        // Only generate code if no errors
         if (errors.isEmpty()) {
-            // Intermediate Code
             System.out.println("\n=== Intermediate Code (TAC) ===");
             ICGenerator icg = new ICGenerator();
             List<ICGInstruction> instructions = icg.generate(ast);
@@ -75,13 +81,11 @@ public class Main {
                 System.out.println("  " + instr);
             }
 
-            // Final Code Generation
             System.out.println();
             CodeGenerator codeGen = new CodeGenerator(instructions);
             codeGen.generate();
             codeGen.printCode();
             codeGen.saveCode(baseName + "_assembly.txt");
-
         } else {
             System.out.println("\nSkipping code generation due to errors.");
         }
