@@ -1,4 +1,5 @@
 package compiler;
+import java.util.ArrayList;
 
 import java.util.List;
 
@@ -7,25 +8,38 @@ public class Main {
         String testProgram = """
                 program test;
                 var x : integer;
+                var i : integer;
                 begin
                     x := 10 + 5;
-                    write(x);
+                    if x > 10 then
+                        write(x)
+                    else
+                        write(0);
+                    while i < 5 do
+                        i := i + 1;
+                    read(x);
+                    write('done')
                 end.
                 """;
 
+        // Lexer
         Lexer lexer = new Lexer(testProgram);
         List<Token> tokens = lexer.tokenize();
 
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
+        // Parser
+        Parser parser = new Parser(tokens);
+        ProgramNode ast = parser.parseProgram();
 
-        List<String> errors = lexer.getErrors();
+        System.out.println("Program name: " + ast.name);
+        System.out.println("Declarations: " + ast.declarations.size());
+        System.out.println("Parsed successfully!");
+
+        List<String> errors = new ArrayList<>(lexer.getErrors());
+        errors.addAll(parser.getErrors());
+
         if (!errors.isEmpty()) {
-            System.out.println("\nLexer Errors:");
-            for (String error : errors) {
-                System.out.println(error);
-            }
+            System.out.println("\nErrors:");
+            for (String e : errors) System.out.println(e);
         }
     }
 }
