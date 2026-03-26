@@ -116,6 +116,10 @@ No external frameworks or libraries are required. The IDE provides:
 - Live compilation in the browser
 - Tabbed output for Listing, Symbol Table, TAC, Assembly, and Errors
 
+## Live Demo
+
+[minipascal-compiler.onrender.com](https://minipascal-compiler.onrender.com/)
+
 ## Author
 
 Aishvi Bansal — [github.com/aishvibansal](https://github.com/aishvibansal)
