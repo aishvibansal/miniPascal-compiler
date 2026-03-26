@@ -35,19 +35,24 @@ public class Main {
                     """;
         }
 
+        // Lexer
         Lexer lexer = new Lexer(sourceCode);
         List<Token> tokens = lexer.tokenize();
 
+        // Parser
         Parser parser = new Parser(tokens);
         ProgramNode ast = parser.parseProgram();
 
+        // Semantic Analysis
         SemanticAnalyzer analyzer = new SemanticAnalyzer();
         analyzer.analyze(ast);
 
+        // Collect all errors
         List<String> errors = new ArrayList<>(lexer.getErrors());
         errors.addAll(parser.getErrors());
         errors.addAll(analyzer.getErrors());
 
+        // Print symbol table
         System.out.println("=== Symbol Table ===");
         analyzer.getSymbolTable().forEach((name, symbol) ->
             System.out.println("  " + name + " : " + symbol.type +
@@ -55,8 +60,21 @@ public class Main {
         );
         System.out.println();
 
+        // Generate listing file
         ListingGenerator listing = new ListingGenerator(sourceCode, errors);
         listing.printListing();
         listing.saveListing(outputPath);
+
+        // Only generate ICG if no errors
+        if (errors.isEmpty()) {
+            System.out.println("\n=== Intermediate Code (TAC) ===");
+            ICGenerator icg = new ICGenerator();
+            List<ICGInstruction> instructions = icg.generate(ast);
+            for (ICGInstruction instr : instructions) {
+                System.out.println("  " + instr);
+            }
+        } else {
+            System.out.println("\nSkipping code generation due to errors.");
+        }
     }
 }
