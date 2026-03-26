@@ -1,0 +1,43 @@
+section .data
+section .text
+START:
+  LOAD  10
+  ADD     5
+  STORE t1
+  LOAD  t1
+  STORE x
+  LOAD  x
+  CMPGT   10
+  STORE t2
+  LOAD  t2
+  NOT
+  STORE t3
+  LOAD  t3
+  JMPT  L1
+  LOAD  x
+  PRINT
+  JUMP  L2
+L1:
+  LOAD  0
+  PRINT
+L2:
+L3:
+  LOAD  i
+  CMPLT   5
+  STORE t4
+  LOAD  t4
+  NOT
+  STORE t5
+  LOAD  t5
+  JMPT  L4
+  LOAD  i
+  ADD     1
+  STORE t6
+  LOAD  t6
+  STORE i
+  JUMP  L3
+L4:
+  READ  x
+  LOAD  "done"
+  PRINT
+  HALT

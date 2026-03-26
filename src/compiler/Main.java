@@ -10,12 +10,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         String sourceCode;
-        String outputPath = "output/listing.txt";
+        String baseName = "output";
 
         if (args.length > 0) {
             sourceCode = new String(Files.readAllBytes(Paths.get(args[0])));
-            outputPath = "output/" + Paths.get(args[0]).getFileName()
-                         .toString().replace(".txt", "") + "_listing.txt";
+            baseName = "output/" + Paths.get(args[0]).getFileName()
+                       .toString().replace(".txt", "");
         } else {
             sourceCode = """
                     program test;
@@ -63,16 +63,25 @@ public class Main {
         // Generate listing file
         ListingGenerator listing = new ListingGenerator(sourceCode, errors);
         listing.printListing();
-        listing.saveListing(outputPath);
+        listing.saveListing(baseName + "_listing.txt");
 
-        // Only generate ICG if no errors
+        // Only generate code if no errors
         if (errors.isEmpty()) {
+            // Intermediate Code
             System.out.println("\n=== Intermediate Code (TAC) ===");
             ICGenerator icg = new ICGenerator();
             List<ICGInstruction> instructions = icg.generate(ast);
             for (ICGInstruction instr : instructions) {
                 System.out.println("  " + instr);
             }
+
+            // Final Code Generation
+            System.out.println();
+            CodeGenerator codeGen = new CodeGenerator(instructions);
+            codeGen.generate();
+            codeGen.printCode();
+            codeGen.saveCode(baseName + "_assembly.txt");
+
         } else {
             System.out.println("\nSkipping code generation due to errors.");
         }
